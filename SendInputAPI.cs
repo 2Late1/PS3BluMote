@@ -20,6 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -151,6 +152,95 @@ namespace WindowsAPI
                 if (lastKeysDown != null) sendKeysUp(lastKeysDown);
             }
 
+            private Input getMouseClickEvent(bool release, bool left)
+            {
+                Input mouseInput = new Input();
+                mouseInput.type = 0;
+                if (left)
+                {
+                    mouseInput.iu.mi.dwFlags = (uint)(release ? 0x0004 : 0x0002);
+                }
+                else
+                {
+                    mouseInput.iu.mi.dwFlags = (uint)(release ? 0x0010 : 0x0008);
+                }
+                
+                mouseInput.iu.mi.dwExtraInfo = GetMessageExtraInfo();
+
+                return mouseInput;
+            }
+
+            private List<Input> getMouseEvent(KeyCode kc)
+            {
+                List<Input> inputList = new List<Input>();
+
+                Input mouseInput = new Input();
+                mouseInput.type = 0;
+                mouseInput.iu.mi.dwFlags = 1; /*MOUSEEVENTF_MOVE*/
+                mouseInput.iu.mi.dwExtraInfo = GetMessageExtraInfo();
+
+                switch (kc)
+                {
+                    case KeyCode.Mouse_Down:
+                        mouseInput.iu.mi.dy = 10;
+                        inputList.Add(mouseInput);
+                        break;
+                    case KeyCode.Mouse_Up:
+                        mouseInput.iu.mi.dy = -10;
+                        inputList.Add(mouseInput);
+                        break;
+                    case KeyCode.Mouse_Left:
+                        mouseInput.iu.mi.dx = -10;
+                        inputList.Add(mouseInput);
+                        break;
+                    case KeyCode.Mouse_Right:
+                        mouseInput.iu.mi.dx = 10;
+                        inputList.Add(mouseInput);
+                        break;
+                    case KeyCode.Mouse_Scroll_Down:
+                        mouseInput.iu.mi.dwFlags = 0x0800;
+                        mouseInput.iu.mi.mouseData = unchecked((uint)-120);
+
+                        inputList.Add(mouseInput);
+                        break;
+                    case KeyCode.Mouse_Scroll_Up:
+                        mouseInput.iu.mi.dwFlags = 0x0800;
+                        mouseInput.iu.mi.mouseData = 120;
+
+                        inputList.Add(mouseInput);
+                        break;
+                    case KeyCode.Mouse_Click_Left:
+                        mouseInput.iu.mi.dwFlags = 0x0002; /*MOUSEEVENF_LEFTDOWN*/
+                        inputList.Add(mouseInput);
+
+                        inputList.Add(getMouseClickEvent(true, true));
+                        break;
+                    case KeyCode.Mouse_Click_Right:
+                        mouseInput.iu.mi.dwFlags = 0x0008; /*MOUSEEVENF_RIGHTDOWN*/
+                        inputList.Add(mouseInput);
+
+                        inputList.Add(getMouseClickEvent(true, false));
+                        break;
+                    default:
+                        int controlValue = (int)kc - MouseEventControlFirst;
+
+                        System.Windows.Forms.Screen primaryScreen = System.Windows.Forms.Screen.PrimaryScreen;
+
+                        Point[] controlLocations = { new Point(24, 24), new Point(60, 24), new Point(95, 24), new Point(140, 24), new Point(180, 24), new Point(225, 24) };
+                        Point controlPoint = controlLocations[controlValue];
+                        mouseInput.iu.mi.dwFlags |= 0x8000; /*MOUSEEVENF_ABSOLUTE*/
+                        mouseInput.iu.mi.dx = (int)(65535 * ((controlPoint.X) / (float)primaryScreen.WorkingArea.Width));
+                        mouseInput.iu.mi.dy = (int)(65535 * ((controlPoint.Y) / (float)primaryScreen.WorkingArea.Height));
+                        inputList.Add(mouseInput);
+
+                        inputList.Add(getMouseClickEvent(false, true));
+                        inputList.Add(getMouseClickEvent(true, true));
+                        break;
+                }
+
+                return inputList;
+            }
+
             public void sendKeysDown(List<KeyCode> KeysDown)
             {
                 if (KeysDown.Count > 0)
@@ -190,23 +280,31 @@ namespace WindowsAPI
                     }
 
                     lastKeysDown = KeysDown;
-                    Input[] InputList = new Input[KeysDown.Count];
+                    List<Input> InputList = new List<Input>(KeysDown.Count);
 
                     for (int i = 0; i < KeysDown.Count; i++)
                     {
-                        Input keyInput = new Input();
-                        keyInput.type = 1;
+                        WindowsAPI.SendInputAPI.Keyboard.KeyCode keyCode = KeysDown[i];
+                        if(keyCode >= (KeyCode)MouseEventFirst)
+                        {
+                            InputList.AddRange(getMouseEvent(keyCode));
+                        }
+                        else
+                        { 
+                            Input keyInput = new Input();
+                            keyInput.type = 1;
 
-                        keyInput.iu.ki.wScan = 0;
-                        keyInput.iu.ki.time = 0;
-                        keyInput.iu.ki.dwFlags = (int)KeyEvent.KeyDown;
-                        keyInput.iu.ki.dwExtraInfo = GetMessageExtraInfo();
-                        keyInput.iu.ki.wVk = (ushort)KeysDown[i];
+                            keyInput.iu.ki.wScan = 0;
+                            keyInput.iu.ki.time = 0;
+                            keyInput.iu.ki.dwFlags = (int)KeyEvent.KeyDown;
+                            keyInput.iu.ki.dwExtraInfo = GetMessageExtraInfo();
+                            keyInput.iu.ki.wVk = (ushort)KeysDown[i];
 
-                        InputList[i] = keyInput;
+                            InputList.Add(keyInput);
+                        }
                     }
-
-                    SendInput((uint)KeysDown.Count, InputList, Marshal.SizeOf(InputList[0]));
+                    
+                    SendInput((uint)InputList.Count, InputList.ToArray(), Marshal.SizeOf(InputList[0]));
                 }
             }
 
@@ -233,6 +331,10 @@ namespace WindowsAPI
                     SendInput((uint)KeysUp.Count, InputList, Marshal.SizeOf(InputList[0]));
                 }
             }
+
+            private const int ExecuteEventFirst = 400;
+            private const int MouseEventFirst = 500;
+            private const int MouseEventControlFirst = 510;
 
             public enum KeyCode
             {
@@ -379,7 +481,25 @@ namespace WindowsAPI
                 Close_Square_Bracket = 221,
                 Single_Quote = 222,
                 Play = 250,
-                Zoom = 251
+                Zoom = 251,
+                Execute_1 = ExecuteEventFirst,
+                Execute_2,
+                Execute_3,
+                Execute_4,
+                Mouse_Up = MouseEventFirst,
+                Mouse_Down,
+                Mouse_Left,
+                Mouse_Right,
+                Mouse_Click_Left,
+                Mouse_Click_Right,
+                Mouse_Scroll_Up,
+                Mouse_Scroll_Down,
+                Mouse_Control_1 = MouseEventControlFirst,
+                Mouse_Control_2,
+                Mouse_Control_3,
+                Mouse_Control_4,
+                Mouse_Control_5,
+                Mouse_Control_6
             }
         }
     }
