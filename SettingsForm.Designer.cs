@@ -19,6 +19,9 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System;
+using System.ComponentModel;
+
 namespace PS3BluMote
 {
     partial class SettingsForm
@@ -251,6 +254,8 @@ namespace PS3BluMote
             this.txtMouseSpeed.Size = new System.Drawing.Size(125, 22);
             this.txtMouseSpeed.TabIndex = 9;
             this.txtMouseSpeed.Text = "10";
+            this.txtMouseSpeed.TextChanged += new System.EventHandler(this.txtMouseSpeed_Changed);
+            this.txtMouseSpeed.Validating += new System.ComponentModel.CancelEventHandler(this.txtMouseSpeed_Validating);
             // 
             // label1
             // 
