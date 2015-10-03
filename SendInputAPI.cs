@@ -102,6 +102,8 @@ namespace WindowsAPI
             private int lastNumberPress, smsArrayIndex;
             private DateTime lastPressTime;
 
+			private int mouseSpeed;
+
             #region "SMS Input"
             static KeyCode[][] numpadLetters =
             {
@@ -118,10 +120,16 @@ namespace WindowsAPI
             };
             #endregion
 
-            public Keyboard(bool smsEnabled)
+            public Keyboard(bool smsEnabled, int mSpeed)
             {
                 isSmsEnabled = smsEnabled;
+				mouseSpeed = mSpeed;
             }
+
+			public void setMouseSpeed(int speed)
+			{
+				mouseSpeed = speed;
+			}
 
             public void sendKey(KeyCode Key)
             {
@@ -182,19 +190,19 @@ namespace WindowsAPI
                 switch (kc)
                 {
                     case KeyCode.Mouse_Down:
-                        mouseInput.iu.mi.dy = 10;
+                        mouseInput.iu.mi.dy = mouseSpeed;
                         inputList.Add(mouseInput);
                         break;
                     case KeyCode.Mouse_Up:
-                        mouseInput.iu.mi.dy = -10;
+                        mouseInput.iu.mi.dy = -mouseSpeed;
                         inputList.Add(mouseInput);
                         break;
                     case KeyCode.Mouse_Left:
-                        mouseInput.iu.mi.dx = -10;
+                        mouseInput.iu.mi.dx = -mouseSpeed;
                         inputList.Add(mouseInput);
                         break;
                     case KeyCode.Mouse_Right:
-                        mouseInput.iu.mi.dx = 10;
+                        mouseInput.iu.mi.dx = mouseSpeed;
                         inputList.Add(mouseInput);
                         break;
                     case KeyCode.Mouse_Scroll_Down:

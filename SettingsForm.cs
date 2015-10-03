@@ -88,8 +88,27 @@ namespace PS3BluMote
                 MessageBox.Show("An error occured whilst attempting to load the remote.", "PS3BluMote: Remote error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            keyboard = new SendInputAPI.Keyboard(cbSms.Checked);
+			int mouseSpeed = 0;
+			try
+			{
+				mouseSpeed = int.Parse(txtMouseSpeed.Text);
+            }
+			catch {}
+
+            keyboard = new SendInputAPI.Keyboard(cbSms.Checked, mouseSpeed);
         }
+
+		private void txtMouseSpeed_Changed(object sender, EventArgs e)
+		{
+			int mouseSpeed = 0;
+			try
+			{
+				mouseSpeed = int.Parse(txtMouseSpeed.Text);
+			}
+			catch { }
+
+			keyboard.setMouseSpeed(mouseSpeed);
+		}
 
         private void cbDebugMode_CheckedChanged(object sender, EventArgs e)
         {
@@ -141,8 +160,15 @@ namespace PS3BluMote
                         }
                         catch
                         { }
-                        
-                        if (cbHibernation.Checked &&
+
+						try
+						{
+							txtMouseSpeed.Text = rssNode.SelectSingleNode("settings/mousespeed").InnerText;
+						}
+						catch
+						{ }
+
+						if (cbHibernation.Checked &&
                             !(new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator)))
                         {
                             MessageBox.Show("Admin/UAC elevated rights are required to use the hibernation feature! Please enable them!", "PS3BluMote: No admin rights found!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -331,7 +357,8 @@ namespace PS3BluMote
             text += "\t\t<smsinput>" + cbSms.Checked.ToString().ToLower() + "</smsinput>\r\n";
             text += "\t\t<hibernation>" + cbHibernation.Checked.ToString().ToLower() + "</hibernation>\r\n";
             text += "\t\t<repeatinterval>" + txtRepeatInterval.Text + "</repeatinterval>\r\n";
-            text += "\t</settings>\r\n";
+			text += "\t\t<mousespeed>" + txtMouseSpeed.Text + "</mousespeed>\r\n";
+			text += "\t</settings>\r\n";
             text += "\t<mappings>\r\n";
 
             for (int i = 0; i < buttonMappings.Length; i++)
@@ -399,7 +426,19 @@ namespace PS3BluMote
             }
         }
 
-        private void txtRepeatInterval_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+		private void txtMouseSpeed_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			try
+			{
+				int i = int.Parse(txtMouseSpeed.Text);
+			}
+			catch
+			{
+				e.Cancel = true;
+			}
+		}
+
+		private void txtRepeatInterval_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
             {
