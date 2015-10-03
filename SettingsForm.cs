@@ -382,7 +382,12 @@ namespace PS3BluMote
                 tw.WriteLine(text);
                 tw.Close();
 
-                return true;
+				// Let's do a backup too, for safety.
+				TextWriter backupWriter = new StreamWriter(SETTINGS_DIRECTORY + "\\settings.ini.backup");
+				backupWriter.WriteLine(text);
+				backupWriter.Close();
+
+				return true;
             }
             catch
             {
