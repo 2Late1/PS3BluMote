@@ -254,12 +254,12 @@ namespace PS3BluMote
             this.txtMouseSpeed.Size = new System.Drawing.Size(125, 22);
             this.txtMouseSpeed.TabIndex = 9;
             this.txtMouseSpeed.Text = "10";
-			this.txtMouseSpeed.TextChanged += new System.EventHandler(this.txtMouseSpeed_Changed);
-			this.txtMouseSpeed.Validating += new System.ComponentModel.CancelEventHandler(this.txtMouseSpeed_Validating);
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
+            this.txtMouseSpeed.TextChanged += new System.EventHandler(this.txtMouseSpeed_Changed);
+            this.txtMouseSpeed.Validating += new System.ComponentModel.CancelEventHandler(this.txtMouseSpeed_Validating);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(13, 135);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
@@ -445,9 +445,9 @@ namespace PS3BluMote
 
         }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.NotifyIcon notifyIcon;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip menuNotifyIcon;
         private System.Windows.Forms.ToolStripMenuItem mitemSettings;
         private System.Windows.Forms.ToolStripMenuItem mitemExit;

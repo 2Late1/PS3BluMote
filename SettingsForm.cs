@@ -88,27 +88,27 @@ namespace PS3BluMote
                 MessageBox.Show("An error occured whilst attempting to load the remote.", "PS3BluMote: Remote error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-			int mouseSpeed = 0;
-			try
-			{
-				mouseSpeed = int.Parse(txtMouseSpeed.Text);
+            int mouseSpeed = 0;
+            try
+            {
+                mouseSpeed = int.Parse(txtMouseSpeed.Text);
             }
-			catch {}
+            catch {}
 
             keyboard = new SendInputAPI.Keyboard(cbSms.Checked, mouseSpeed);
         }
 
-		private void txtMouseSpeed_Changed(object sender, EventArgs e)
-		{
-			int mouseSpeed = 0;
-			try
-			{
-				mouseSpeed = int.Parse(txtMouseSpeed.Text);
-			}
-			catch { }
+        private void txtMouseSpeed_Changed(object sender, EventArgs e)
+        {
+            int mouseSpeed = 0;
+            try
+            {
+                mouseSpeed = int.Parse(txtMouseSpeed.Text);
+            }
+            catch { }
 
-			keyboard.setMouseSpeed(mouseSpeed);
-		}
+            keyboard.setMouseSpeed(mouseSpeed);
+        }
 
         private void cbDebugMode_CheckedChanged(object sender, EventArgs e)
         {
@@ -161,14 +161,14 @@ namespace PS3BluMote
                         catch
                         { }
 
-						try
-						{
-							txtMouseSpeed.Text = rssNode.SelectSingleNode("settings/mousespeed").InnerText;
-						}
-						catch
-						{ }
+                        try
+                        {
+                            txtMouseSpeed.Text = rssNode.SelectSingleNode("settings/mousespeed").InnerText;
+                        }
+                        catch
+                        { }
 
-						if (cbHibernation.Checked &&
+                        if (cbHibernation.Checked &&
                             !(new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator)))
                         {
                             MessageBox.Show("Admin/UAC elevated rights are required to use the hibernation feature! Please enable them!", "PS3BluMote: No admin rights found!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -357,8 +357,8 @@ namespace PS3BluMote
             text += "\t\t<smsinput>" + cbSms.Checked.ToString().ToLower() + "</smsinput>\r\n";
             text += "\t\t<hibernation>" + cbHibernation.Checked.ToString().ToLower() + "</hibernation>\r\n";
             text += "\t\t<repeatinterval>" + txtRepeatInterval.Text + "</repeatinterval>\r\n";
-			text += "\t\t<mousespeed>" + txtMouseSpeed.Text + "</mousespeed>\r\n";
-			text += "\t</settings>\r\n";
+            text += "\t\t<mousespeed>" + txtMouseSpeed.Text + "</mousespeed>\r\n";
+            text += "\t</settings>\r\n";
             text += "\t<mappings>\r\n";
 
             for (int i = 0; i < buttonMappings.Length; i++)
@@ -382,12 +382,12 @@ namespace PS3BluMote
                 tw.WriteLine(text);
                 tw.Close();
 
-				// Let's do a backup too, for safety.
-				TextWriter backupWriter = new StreamWriter(SETTINGS_DIRECTORY + "\\settings.ini.backup");
-				backupWriter.WriteLine(text);
-				backupWriter.Close();
+                // Let's do a backup too, for safety.
+                TextWriter backupWriter = new StreamWriter(SETTINGS_DIRECTORY + "\\settings.ini.backup");
+                backupWriter.WriteLine(text);
+                backupWriter.Close();
 
-				return true;
+                return true;
             }
             catch
             {
@@ -431,19 +431,19 @@ namespace PS3BluMote
             }
         }
 
-		private void txtMouseSpeed_Validating(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			try
-			{
-				int i = int.Parse(txtMouseSpeed.Text);
-			}
-			catch
-			{
-				e.Cancel = true;
-			}
-		}
+        private void txtMouseSpeed_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                int i = int.Parse(txtMouseSpeed.Text);
+            }
+            catch
+            {
+                e.Cancel = true;
+            }
+        }
 
-		private void txtRepeatInterval_Validating(object sender, System.ComponentModel.CancelEventArgs e)
+        private void txtRepeatInterval_Validating(object sender, System.ComponentModel.CancelEventArgs e)
         {
             try
             {

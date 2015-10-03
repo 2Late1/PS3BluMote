@@ -102,7 +102,7 @@ namespace WindowsAPI
             private int lastNumberPress, smsArrayIndex;
             private DateTime lastPressTime;
 
-			private int mouseSpeed;
+            private int mouseSpeed;
 
             #region "SMS Input"
             static KeyCode[][] numpadLetters =
@@ -123,13 +123,13 @@ namespace WindowsAPI
             public Keyboard(bool smsEnabled, int mSpeed)
             {
                 isSmsEnabled = smsEnabled;
-				mouseSpeed = mSpeed;
+                mouseSpeed = mSpeed;
             }
 
-			public void setMouseSpeed(int speed)
-			{
-				mouseSpeed = speed;
-			}
+            public void setMouseSpeed(int speed)
+            {
+                mouseSpeed = speed;
+            }
 
             public void sendKey(KeyCode Key)
             {
